@@ -83,8 +83,10 @@ export function calculateResult(answers) {
 
   const total = riasec.reduce((sum, k) => sum + scores[k], 0);
 
-  const compatibility = Math.round((scores[main] / total) * 100);
-
+const compatibility = Math.min(
+  95,
+  Math.max(65, Math.round((scores[main] / total) * 100 + 45))
+);
   return {
     mainProfile: main,
     secondaryProfile: secondary,

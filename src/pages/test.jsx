@@ -45,24 +45,44 @@ const answerOptions = [
   { label: "De acuerdo", value: 4 },
   { label: "Muy de acuerdo", value: 5 }
 ];
-
+const dynamicMessages = [
+  "Analizando patrones de personalidad...",
+  "Detectando afinidades profesionales...",
+  "Comparando intereses vocacionales...",
+  "Evaluando estilo de trabajo...",
+  "Procesando compatibilidad laboral...",
+  "Identificando fortalezas principales..."
+];
 function Test() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
 
   const question = questions[currentQuestion];
   const progress = Math.round((Object.keys(answers).length / questions.length) * 100);
-
+const currentMessage =
+  dynamicMessages[currentQuestion % dynamicMessages.length];
   const handleChange = (questionId, value) => {
     setAnswers({ ...answers, [questionId]: value });
   };
 
-  const handleNext = () => {
-    if (!answers[question.id]) {
-      alert("Selecciona una respuesta para continuar.");
-      return;
-    }
+const handleNext = () => {
+  if (!answers[question.id]) {
+    alert("Selecciona una respuesta para continuar.");
+    return;
+  }
+
+  if (currentQuestion === questions.length - 1) {
+    setIsAnalyzing(true);
+
+    setTimeout(() => {
+      setResult(calculateResult(answers));
+    }, 2600);
+  } else {
+    setCurrentQuestion(currentQuestion + 1);
+  }
+};
 
     if (currentQuestion === questions.length - 1) {
       setResult(calculateResult(answers));
@@ -74,7 +94,32 @@ function Test() {
   const handleBack = () => {
     if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
   };
+if (isAnalyzing) {
+  return (
+    <main className="analyzing-screen">
+      <div className="analyzing-box">
+        <div className="analyzing-spinner"></div>
 
+        <span className="v2-pill">
+          Vocatia AI
+        </span>
+
+        <h1>Analizando tu perfil...</h1>
+
+        <p>
+          Estamos procesando tus patrones de respuesta,
+          personalidad e intereses vocacionales.
+        </p>
+
+        <div className="analyzing-steps">
+          <div>✓ Analizando intereses</div>
+          <div>✓ Evaluando personalidad laboral</div>
+          <div>✓ Calculando compatibilidad profesional</div>
+        </div>
+      </div>
+    </main>
+  );
+}
   if (result) {
     const main = result.mainProfile;
     const secondary = result.secondaryProfile;
@@ -125,10 +170,10 @@ function Test() {
         </section>
 
         <section className="v2-metrics-grid">
-          <Metric title="Compatibilidad vocacional" value={compatibility} />
-          <Metric title="Claridad profesional" value={clarity} />
-          <Metric title="Potencial de empleabilidad" value={employability} />
-          <Metric title="Afinidad con carreras rentables" value={salaryFit} />
+        <Metric title="Afinidad con perfil principal" value={compatibility} />
+        <Metric title="Claridad de intereses" value={clarity} />
+        <Metric title="Consistencia vocacional" value={employability} />
+        <Metric title="Potencial de exploración laboral" value={salaryFit} />
         </section>
 
         <section className="v2-two-columns">
@@ -236,7 +281,7 @@ function Test() {
 
   return (
     <main className="test-v2-page">
-      <section className="test-v2-card">
+<section key={currentQuestion} className="test-v2-card fade-question">
         <div className="test-v2-top">
           <span>Pregunta {currentQuestion + 1} de {questions.length}</span>
           <strong>{progress}%</strong>
@@ -248,7 +293,9 @@ function Test() {
 
         <h1>Test Vocacional</h1>
         <h2>{question.text}</h2>
-
+<p className="test-v2-message">
+  {currentMessage}
+</p>
         <div className="test-v2-options">
           {answerOptions.map((option) => (
             <button
@@ -273,9 +320,25 @@ function Test() {
       </section>
     </main>
   );
-}
-
+  
 function Metric({ title, value }) {
+  return (
+    <article className="v2-metric">
+      <div className="metric-top">
+        <p>{title}</p>
+        <h3>{value}%</h3>
+      </div>
+
+      <div className="v2-metric-bar">
+        <div style={{ width: `${value}%` }}></div>
+      </div>
+
+      <span className="metric-description">
+        Resultado calculado según tus patrones de respuesta.
+      </span>
+    </article>
+  );
+}
   return (
     <article className="v2-metric">
       <p>{title}</p>
@@ -285,7 +348,6 @@ function Metric({ title, value }) {
       </div>
     </article>
   );
-}
 
 function LockedCard({ title, value }) {
   return (
