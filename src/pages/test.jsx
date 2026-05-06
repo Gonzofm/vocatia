@@ -12,12 +12,12 @@ const profileNames = {
 };
 
 const profileDescriptions = {
-  R: "Prefieres actividades prácticas, concretas y orientadas a resolver problemas reales.",
-  I: "Tienes afinidad por analizar, investigar, resolver problemas y aprender de forma profunda.",
-  A: "Destacas por tu creatividad, expresión de ideas, diseño, comunicación o pensamiento original.",
-  S: "Te orientas a ayudar, acompañar, enseñar o trabajar con personas.",
-  E: "Tienes interés por liderar, convencer, emprender, negociar o dirigir proyectos.",
-  C: "Prefieres la organización, estructura, planificación, procesos claros y orden."
+  R: "Tienes afinidad por actividades prácticas, resolución de problemas concretos y trabajo orientado a resultados visibles.",
+  I: "Tu perfil destaca por el análisis, investigación, curiosidad intelectual y resolución de problemas complejos.",
+  A: "Tu fortaleza está en la creatividad, comunicación, diseño, expresión de ideas y pensamiento original.",
+  S: "Tienes orientación hacia ayudar, acompañar, enseñar y generar impacto positivo en otras personas.",
+  E: "Tu perfil se relaciona con liderazgo, persuasión, emprendimiento, negociación y toma de decisiones.",
+  C: "Destacas por organización, estructura, procesos, planificación y orden en la ejecución."
 };
 
 const answerOptions = [
@@ -34,16 +34,10 @@ function Test() {
   const [result, setResult] = useState(null);
 
   const question = questions[currentQuestion];
-
-  const progress = Math.round(
-    (Object.keys(answers).length / questions.length) * 100
-  );
+  const progress = Math.round((Object.keys(answers).length / questions.length) * 100);
 
   const handleChange = (questionId, value) => {
-    setAnswers({
-      ...answers,
-      [questionId]: value
-    });
+    setAnswers({ ...answers, [questionId]: value });
   };
 
   const handleNext = () => {
@@ -53,25 +47,23 @@ function Test() {
     }
 
     if (currentQuestion === questions.length - 1) {
-      const finalResult = calculateResult(answers);
-      setResult(finalResult);
+      setResult(calculateResult(answers));
     } else {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    }
+    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
   };
 
   if (result) {
-    const mainProfile = profileNames[result.mainProfile];
-    const secondaryProfile = profileNames[result.secondaryProfile];
-    const compatibility = result.compatibility || 80;
-    const clarity = Math.min(100, Math.round(compatibility * 0.85));
-    const potential = Math.min(100, Math.round(compatibility * 1.05));
+    const main = result.mainProfile;
+    const secondary = result.secondaryProfile;
+    const compatibility = result.compatibility || 82;
+    const clarity = Math.min(100, Math.round(compatibility * 0.88));
+    const employability = Math.min(100, Math.round(compatibility * 1.04));
+    const decisionRisk = Math.max(12, 100 - clarity);
 
     const riasecScores = Object.entries(result.scores).filter(([key]) =>
       ["R", "I", "A", "S", "E", "C"].includes(key)
@@ -80,183 +72,196 @@ function Test() {
     const maxScore = Math.max(...riasecScores.map(([, value]) => value));
 
     return (
-      <div style={styles.page}>
-        <div style={styles.hero}>
+      <main className="result-page">
+        <section className="result-header">
           <div>
-            <p style={styles.badge}>Resultado gratuito</p>
-            <h1 style={styles.title}>Dashboard Vocacional</h1>
-            <p style={styles.subtitle}>
-              Este es un análisis inicial de tu perfil vocacional, personalidad
-              laboral y posibles rutas profesionales.
+            <span className="result-pill">Resultado gratuito</span>
+            <h1>Tu Dashboard Vocacional</h1>
+            <p>
+              Este análisis inicial resume tu perfil, compatibilidad profesional y áreas
+              de carrera recomendadas.
             </p>
           </div>
 
-          <button style={styles.premiumButton}>
+          <button className="premium-main-btn">
             Desbloquear informe completo 🔒
           </button>
-        </div>
-
-        <div style={styles.mainGrid}>
-          <section style={styles.profileCard}>
-            <p style={styles.sectionLabel}>Perfil principal</p>
-            <h2 style={styles.profileTitle}>{mainProfile}</h2>
-            <p style={styles.description}>
-              {profileDescriptions[result.mainProfile]}
-            </p>
-
-            <div style={styles.secondaryProfile}>
-              <p>Perfil secundario</p>
-              <strong>{secondaryProfile}</strong>
-            </div>
-          </section>
-
-          <section style={styles.metricsGrid}>
-            <Metric title="Compatibilidad vocacional" value={compatibility} />
-            <Metric title="Claridad profesional" value={clarity} />
-            <Metric title="Potencial de desarrollo" value={potential} />
-          </section>
-        </div>
-
-        <section style={styles.card}>
-          <h3 style={styles.cardTitle}>Distribución de intereses</h3>
-
-          {riasecScores.map(([key, value]) => {
-            const percent = Math.round((value / maxScore) * 100);
-
-            return (
-              <div key={key} style={styles.barRow}>
-                <div style={styles.barHeader}>
-                  <span>{profileNames[key]}</span>
-                  <strong>{percent}%</strong>
-                </div>
-
-                <div style={styles.barBackground}>
-                  <div style={{ ...styles.barFill, width: `${percent}%` }} />
-                </div>
-              </div>
-            );
-          })}
         </section>
 
-        <section style={styles.twoColumns}>
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Carreras recomendadas</h3>
+        <section className="result-grid">
+          <article className="profile-panel">
+            <p className="small-label">Perfil principal</p>
+            <h2>{profileNames[main]}</h2>
+            <p>{profileDescriptions[main]}</p>
 
-            <div style={styles.careerList}>
+            <div className="secondary-box">
+              <span>Perfil secundario</span>
+              <strong>{profileNames[secondary]}</strong>
+            </div>
+          </article>
+
+          <article className="score-panel">
+            <Metric title="Compatibilidad vocacional" value={compatibility} />
+            <Metric title="Claridad profesional" value={clarity} />
+            <Metric title="Potencial de empleabilidad" value={employability} />
+          </article>
+        </section>
+
+        <section className="result-section">
+          <div className="section-head">
+            <div>
+              <span className="section-pill">Mapa de intereses</span>
+              <h2>Distribución de tu perfil</h2>
+            </div>
+            <p>Mientras más alto el porcentaje, mayor afinidad con ese estilo vocacional.</p>
+          </div>
+
+          <div className="bars">
+            {riasecScores.map(([key, value]) => {
+              const percent = Math.round((value / maxScore) * 100);
+
+              return (
+                <div className="bar-item" key={key}>
+                  <div className="bar-info">
+                    <span>{profileNames[key]}</span>
+                    <strong>{percent}%</strong>
+                  </div>
+                  <div className="bar-bg">
+                    <div style={{ width: `${percent}%` }}></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="two-col">
+          <article className="result-card">
+            <h2>Carreras recomendadas</h2>
+            <p className="muted">
+              Estas carreras aparecen como primeras rutas compatibles con tu perfil.
+            </p>
+
+            <div className="career-list">
               {result.careers.map((career, index) => (
-                <div key={index} style={styles.careerItem}>
+                <div className="career-item" key={index}>
                   <span>{index + 1}</span>
-                  <p>{career}</p>
+                  <div>
+                    <strong>{career}</strong>
+                    <p>Alta compatibilidad inicial con tu perfil vocacional.</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+          </article>
 
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Lectura inicial</h3>
-            <p style={styles.description}>
-              Tu resultado combina un perfil{" "}
-              <strong>{mainProfile}</strong> con rasgos{" "}
-              <strong>{secondaryProfile}</strong>. Esto sugiere que podrías
-              desarrollarte mejor en carreras donde puedas aprovechar tus
-              intereses principales, tu estilo de trabajo y tus motivaciones.
+          <article className="result-card">
+            <h2>Lectura inicial</h2>
+            <p className="muted">
+              Tu resultado combina un perfil <strong>{profileNames[main]}</strong> con rasgos{" "}
+              <strong>{profileNames[secondary]}</strong>. Esto sugiere que podrías destacar
+              en rutas donde combines tus intereses principales con tu estilo de trabajo.
             </p>
 
-            <p style={styles.description}>
-              Este resultado no reemplaza una evaluación vocacional completa,
-              pero sirve como punto de partida para tomar mejores decisiones.
-            </p>
-          </div>
+            <div className="insight-box">
+              <strong>Insight clave</strong>
+              <p>
+                El siguiente paso no es elegir una carrera de inmediato, sino comparar tus
+                opciones con mercado laboral, habilidades requeridas y estilo de vida esperado.
+              </p>
+            </div>
+          </article>
         </section>
 
-        <section style={styles.premiumSection}>
-          <div style={styles.lockHeader}>
-            <h3>Informe premium bloqueado</h3>
+        <section className="premium-zone">
+          <div className="premium-copy">
+            <span className="section-pill">Premium</span>
+            <h2>Tu informe completo está listo</h2>
             <p>
-              Desbloquea el análisis completo con riesgos, plan de acción,
-              ruta profesional y recomendaciones personalizadas.
+              Desbloquea el análisis avanzado con riesgos, rutas de carrera, empleabilidad,
+              sueldos estimados y plan de acción personalizado.
             </p>
           </div>
 
-          <div style={styles.lockedGrid}>
-            <LockedCard title="Riesgo de mala elección" value="••%" />
-            <LockedCard title="Afinidad con carreras mejor pagadas" value="••%" />
-            <LockedCard title="Proyección de empleabilidad" value="••%" />
-            <LockedCard title="Ruta profesional de 90 días" value="Bloqueado" />
+          <div className="premium-preview-grid">
+            <LockedCard title="Riesgo de mala elección" value={`${decisionRisk}%`} />
+            <LockedCard title="Carreras con mejor retorno" value="Top 5" />
+            <LockedCard title="Proyección de empleabilidad" value={`${employability}%`} />
+            <LockedCard title="Ruta profesional de 90 días" value="Lista" />
+            <LockedCard title="Habilidades urgentes" value="8 skills" />
+            <LockedCard title="Plan de acción personalizado" value="PDF" />
           </div>
 
-          <button style={styles.unlockButton}>
-            Ver mi plan profesional completo 🔒
-          </button>
+          <div className="premium-cta">
+            <div>
+              <strong>Incluye:</strong>
+              <p>
+                top de carreras, riesgos, ruta de estudios, habilidades clave, empleabilidad
+                y recomendación profesional final.
+              </p>
+            </div>
+
+            <button className="premium-main-btn">
+              Ver mi informe completo 🔒
+            </button>
+          </div>
         </section>
 
-        <button
-          style={styles.restartButton}
-          onClick={() => window.location.reload()}
-        >
+        <button className="restart-btn" onClick={() => window.location.reload()}>
           Repetir test
         </button>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div style={styles.testPage}>
-      <div style={styles.testCard}>
-        <div style={styles.questionTop}>
-          <p>
-            Pregunta {currentQuestion + 1} de {questions.length}
-          </p>
+    <main className="test-page">
+      <section className="test-card">
+        <div className="question-top">
+          <span>Pregunta {currentQuestion + 1} de {questions.length}</span>
           <strong>{progress}%</strong>
         </div>
 
-        <div style={styles.progressBar}>
-          <div style={{ ...styles.progressFill, width: `${progress}%` }} />
+        <div className="test-progress">
+          <div style={{ width: `${progress}%` }}></div>
         </div>
 
-        <h1 style={styles.testTitle}>Test Vocacional</h1>
-        <h2 style={styles.question}>{question.text}</h2>
+        <h1>Test Vocacional</h1>
+        <h2>{question.text}</h2>
 
-        <div style={styles.answerGrid}>
+        <div className="answer-list">
           {answerOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => handleChange(question.id, option.value)}
-              style={{
-                ...styles.answerButton,
-                ...(answers[question.id] === option.value
-                  ? styles.answerSelected
-                  : {})
-              }}
+              className={answers[question.id] === option.value ? "selected-answer" : ""}
             >
               {option.label}
             </button>
           ))}
         </div>
 
-        <div style={styles.navButtons}>
-          <button onClick={handleBack} style={styles.backButton}>
+        <div className="test-actions">
+          <button onClick={handleBack} className="back-btn">
             Atrás
           </button>
 
-          <button onClick={handleNext} style={styles.nextButton}>
-            {currentQuestion === questions.length - 1
-              ? "Ver resultado"
-              : "Siguiente"}
+          <button onClick={handleNext} className="next-btn">
+            {currentQuestion === questions.length - 1 ? "Ver resultado" : "Siguiente"}
           </button>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 
 function Metric({ title, value }) {
   return (
-    <div style={styles.metricCard}>
+    <div className="metric-card">
       <p>{title}</p>
-      <h2>{value}%</h2>
-      <div style={styles.miniBar}>
-        <div style={{ ...styles.miniBarFill, width: `${value}%` }} />
+      <h3>{value}%</h3>
+      <div className="metric-bar">
+        <div style={{ width: `${value}%` }}></div>
       </div>
     </div>
   );
@@ -264,284 +269,15 @@ function Metric({ title, value }) {
 
 function LockedCard({ title, value }) {
   return (
-    <div style={styles.lockedCard}>
-      <p>{title}</p>
-      <h2>{value}</h2>
-      <small>Disponible en premium</small>
-    </div>
+    <article className="locked-card">
+      <div className="locked-content">
+        <p>{title}</p>
+        <h3>{value}</h3>
+        <small>Disponible en premium</small>
+      </div>
+      <div className="lock-overlay">🔒</div>
+    </article>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #020617, #0f172a)",
-    color: "white",
-    padding: "40px"
-  },
-  hero: {
-    maxWidth: "1200px",
-    margin: "0 auto 30px",
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "20px",
-    alignItems: "center"
-  },
-  badge: {
-    display: "inline-block",
-    padding: "8px 14px",
-    borderRadius: "999px",
-    background: "#1e293b",
-    color: "#93c5fd",
-    fontSize: "14px"
-  },
-  title: {
-    fontSize: "42px",
-    margin: "10px 0"
-  },
-  subtitle: {
-    maxWidth: "650px",
-    color: "#cbd5e1",
-    lineHeight: "1.6"
-  },
-  mainGrid: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    display: "grid",
-    gridTemplateColumns: "1.3fr 1fr",
-    gap: "20px"
-  },
-  profileCard: {
-    background: "rgba(30, 41, 59, 0.9)",
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    borderRadius: "24px",
-    padding: "30px"
-  },
-  sectionLabel: {
-    color: "#93c5fd",
-    fontSize: "14px"
-  },
-  profileTitle: {
-    fontSize: "34px",
-    margin: "8px 0",
-    color: "#22c55e"
-  },
-  description: {
-    color: "#cbd5e1",
-    lineHeight: "1.7"
-  },
-  secondaryProfile: {
-    marginTop: "25px",
-    padding: "18px",
-    borderRadius: "18px",
-    background: "#0f172a"
-  },
-  metricsGrid: {
-    display: "grid",
-    gap: "15px"
-  },
-  metricCard: {
-    background: "rgba(30, 41, 59, 0.9)",
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    borderRadius: "20px",
-    padding: "22px"
-  },
-  miniBar: {
-    height: "8px",
-    background: "#334155",
-    borderRadius: "999px",
-    overflow: "hidden"
-  },
-  miniBarFill: {
-    height: "100%",
-    background: "#22c55e"
-  },
-  card: {
-    maxWidth: "1200px",
-    margin: "20px auto 0",
-    background: "rgba(30, 41, 59, 0.9)",
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    borderRadius: "24px",
-    padding: "28px"
-  },
-  cardTitle: {
-    fontSize: "24px",
-    marginBottom: "20px"
-  },
-  barRow: {
-    marginBottom: "18px"
-  },
-  barHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "8px"
-  },
-  barBackground: {
-    height: "12px",
-    background: "#334155",
-    borderRadius: "999px",
-    overflow: "hidden"
-  },
-  barFill: {
-    height: "100%",
-    background: "linear-gradient(90deg, #22c55e, #3b82f6)"
-  },
-  twoColumns: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "20px"
-  },
-  careerList: {
-    display: "grid",
-    gap: "12px"
-  },
-  careerItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "14px",
-    padding: "14px",
-    background: "#0f172a",
-    borderRadius: "14px"
-  },
-  premiumSection: {
-    maxWidth: "1200px",
-    margin: "20px auto",
-    background: "rgba(15, 23, 42, 0.95)",
-    border: "1px solid rgba(250, 204, 21, 0.35)",
-    borderRadius: "24px",
-    padding: "30px",
-    textAlign: "center"
-  },
-  lockHeader: {
-    maxWidth: "700px",
-    margin: "0 auto 24px",
-    color: "#e5e7eb"
-  },
-  lockedGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "16px"
-  },
-  lockedCard: {
-    padding: "22px",
-    borderRadius: "18px",
-    background: "#1e293b",
-    filter: "blur(2px)",
-    opacity: 0.55
-  },
-  unlockButton: {
-    marginTop: "24px",
-    padding: "15px 24px",
-    border: "none",
-    borderRadius: "14px",
-    background: "#facc15",
-    color: "#111827",
-    fontWeight: "bold",
-    cursor: "pointer"
-  },
-  premiumButton: {
-    padding: "14px 22px",
-    border: "none",
-    borderRadius: "14px",
-    background: "#facc15",
-    color: "#111827",
-    fontWeight: "bold",
-    cursor: "pointer"
-  },
-  restartButton: {
-    display: "block",
-    margin: "25px auto 0",
-    padding: "13px 22px",
-    border: "none",
-    borderRadius: "14px",
-    background: "#334155",
-    color: "white",
-    cursor: "pointer"
-  },
-  testPage: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #020617, #0f172a)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "20px",
-    color: "white"
-  },
-  testCard: {
-    width: "100%",
-    maxWidth: "720px",
-    background: "rgba(30, 41, 59, 0.95)",
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    borderRadius: "28px",
-    padding: "34px"
-  },
-  questionTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    color: "#cbd5e1"
-  },
-  progressBar: {
-    height: "10px",
-    background: "#334155",
-    borderRadius: "999px",
-    overflow: "hidden",
-    marginBottom: "28px"
-  },
-  progressFill: {
-    height: "100%",
-    background: "linear-gradient(90deg, #22c55e, #3b82f6)"
-  },
-  testTitle: {
-    fontSize: "34px"
-  },
-  question: {
-    fontSize: "26px",
-    lineHeight: "1.4"
-  },
-  answerGrid: {
-    display: "grid",
-    gap: "12px",
-    marginTop: "28px"
-  },
-  answerButton: {
-    padding: "16px",
-    borderRadius: "16px",
-    border: "1px solid #475569",
-    background: "#0f172a",
-    color: "white",
-    textAlign: "left",
-    cursor: "pointer",
-    fontSize: "16px"
-  },
-  answerSelected: {
-    background: "#2563eb",
-    borderColor: "#60a5fa"
-  },
-  navButtons: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "28px",
-    gap: "14px"
-  },
-  backButton: {
-    padding: "14px 22px",
-    borderRadius: "14px",
-    border: "none",
-    background: "#334155",
-    color: "white",
-    cursor: "pointer"
-  },
-  nextButton: {
-    padding: "14px 22px",
-    borderRadius: "14px",
-    border: "none",
-    background: "#22c55e",
-    color: "white",
-    fontWeight: "bold",
-    cursor: "pointer"
-  }
-};
 
 export default Test;
