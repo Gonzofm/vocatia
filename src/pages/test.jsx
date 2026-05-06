@@ -45,6 +45,7 @@ const answerOptions = [
   { label: "De acuerdo", value: 4 },
   { label: "Muy de acuerdo", value: 5 }
 ];
+
 const dynamicMessages = [
   "Analizando patrones de personalidad...",
   "Detectando afinidades profesionales...",
@@ -53,6 +54,7 @@ const dynamicMessages = [
   "Procesando compatibilidad laboral...",
   "Identificando fortalezas principales..."
 ];
+
 function Test() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -60,66 +62,70 @@ function Test() {
   const [result, setResult] = useState(null);
 
   const question = questions[currentQuestion];
-  const progress = Math.round((Object.keys(answers).length / questions.length) * 100);
-const currentMessage =
-  dynamicMessages[currentQuestion % dynamicMessages.length];
+
+  const progress = Math.round(
+    (Object.keys(answers).length / questions.length) * 100
+  );
+
+  const currentMessage =
+    dynamicMessages[currentQuestion % dynamicMessages.length];
+
   const handleChange = (questionId, value) => {
-    setAnswers({ ...answers, [questionId]: value });
+    setAnswers({
+      ...answers,
+      [questionId]: value
+    });
   };
 
-const handleNext = () => {
-  if (!answers[question.id]) {
-    alert("Selecciona una respuesta para continuar.");
-    return;
-  }
-
-  if (currentQuestion === questions.length - 1) {
-    setIsAnalyzing(true);
-
-    setTimeout(() => {
-      setResult(calculateResult(answers));
-    }, 2600);
-  } else {
-    setCurrentQuestion(currentQuestion + 1);
-  }
-};
+  const handleNext = () => {
+    if (!answers[question.id]) {
+      alert("Selecciona una respuesta para continuar.");
+      return;
+    }
 
     if (currentQuestion === questions.length - 1) {
-      setResult(calculateResult(answers));
+      setIsAnalyzing(true);
+
+      setTimeout(() => {
+        setResult(calculateResult(answers));
+        setIsAnalyzing(false);
+      }, 2600);
     } else {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
   };
-if (isAnalyzing) {
-  return (
-    <main className="analyzing-screen">
-      <div className="analyzing-box">
-        <div className="analyzing-spinner"></div>
 
-        <span className="v2-pill">
-          Vocatia AI
-        </span>
+  if (isAnalyzing) {
+    return (
+      <main className="analyzing-screen">
+        <div className="analyzing-box">
+          <div className="analyzing-spinner"></div>
 
-        <h1>Analizando tu perfil...</h1>
+          <span className="v2-pill">Vocatia AI</span>
 
-        <p>
-          Estamos procesando tus patrones de respuesta,
-          personalidad e intereses vocacionales.
-        </p>
+          <h1>Analizando tu perfil...</h1>
 
-        <div className="analyzing-steps">
-          <div>✓ Analizando intereses</div>
-          <div>✓ Evaluando personalidad laboral</div>
-          <div>✓ Calculando compatibilidad profesional</div>
+          <p>
+            Estamos procesando tus patrones de respuesta, personalidad e
+            intereses vocacionales.
+          </p>
+
+          <div className="analyzing-steps">
+            <div>✓ Analizando intereses</div>
+            <div>✓ Evaluando personalidad laboral</div>
+            <div>✓ Calculando compatibilidad profesional</div>
+          </div>
         </div>
-      </div>
-    </main>
-  );
-}
+      </main>
+    );
+  }
+
   if (result) {
     const main = result.mainProfile;
     const secondary = result.secondaryProfile;
@@ -142,12 +148,14 @@ if (isAnalyzing) {
             <span className="v2-pill">Resultado gratuito</span>
             <h1>Tu perfil vocacional está listo</h1>
             <p>
-              Este dashboard resume tu perfil, carreras compatibles, fortalezas e indicadores
-              iniciales para tomar una mejor decisión profesional.
+              Este dashboard resume tu perfil, carreras compatibles, fortalezas
+              e indicadores iniciales para tomar una mejor decisión profesional.
             </p>
           </div>
 
-          <button className="v2-premium-btn">Desbloquear informe completo 🔒</button>
+          <button className="v2-premium-btn">
+            Desbloquear informe completo 🔒
+          </button>
         </section>
 
         <section className="v2-hero-grid">
@@ -170,10 +178,10 @@ if (isAnalyzing) {
         </section>
 
         <section className="v2-metrics-grid">
-        <Metric title="Afinidad con perfil principal" value={compatibility} />
-        <Metric title="Claridad de intereses" value={clarity} />
-        <Metric title="Consistencia vocacional" value={employability} />
-        <Metric title="Potencial de exploración laboral" value={salaryFit} />
+          <Metric title="Afinidad con perfil principal" value={compatibility} />
+          <Metric title="Claridad de intereses" value={clarity} />
+          <Metric title="Consistencia vocacional" value={employability} />
+          <Metric title="Potencial de exploración laboral" value={salaryFit} />
         </section>
 
         <section className="v2-two-columns">
@@ -186,12 +194,14 @@ if (isAnalyzing) {
             <div className="v2-radar">
               {riasecScores.map(([key, value]) => {
                 const percent = Math.round((value / maxScore) * 100);
+
                 return (
                   <div className="v2-radar-row" key={key}>
                     <div>
                       <span>{profileNames[key]}</span>
                       <strong>{percent}%</strong>
                     </div>
+
                     <div className="v2-bar-bg">
                       <div style={{ width: `${percent}%` }}></div>
                     </div>
@@ -211,6 +221,7 @@ if (isAnalyzing) {
               {result.careers.map((career, index) => (
                 <div className="v2-career-item" key={index}>
                   <span>{index + 1}</span>
+
                   <div>
                     <strong>{career}</strong>
                     <p>Alta compatibilidad inicial con tu perfil.</p>
@@ -243,9 +254,9 @@ if (isAnalyzing) {
 
             <p className="v2-muted">
               Tu combinación <strong>{profileNames[main]}</strong> +{" "}
-              <strong>{profileNames[secondary]}</strong> sugiere que no solo debes mirar
-              “qué carrera te gusta”, sino también qué entorno laboral, habilidades y ritmo
-              profesional encajan contigo.
+              <strong>{profileNames[secondary]}</strong> sugiere que no solo
+              debes mirar “qué carrera te gusta”, sino también qué entorno
+              laboral, habilidades y ritmo profesional encajan contigo.
             </p>
           </article>
         </section>
@@ -255,8 +266,9 @@ if (isAnalyzing) {
             <span className="v2-premium-pill">Premium</span>
             <h2>Tu informe completo está bloqueado</h2>
             <p>
-              Desbloquea el análisis avanzado con riesgo de mala elección, carreras con mejor
-              retorno, empleabilidad, ruta de 90 días, habilidades urgentes y plan de acción.
+              Desbloquea el análisis avanzado con riesgo de mala elección,
+              carreras con mejor retorno, empleabilidad, ruta de 90 días,
+              habilidades urgentes y plan de acción.
             </p>
           </div>
 
@@ -281,9 +293,11 @@ if (isAnalyzing) {
 
   return (
     <main className="test-v2-page">
-<section key={currentQuestion} className="test-v2-card fade-question">
+      <section key={currentQuestion} className="test-v2-card fade-question">
         <div className="test-v2-top">
-          <span>Pregunta {currentQuestion + 1} de {questions.length}</span>
+          <span>
+            Pregunta {currentQuestion + 1} de {questions.length}
+          </span>
           <strong>{progress}%</strong>
         </div>
 
@@ -293,15 +307,19 @@ if (isAnalyzing) {
 
         <h1>Test Vocacional</h1>
         <h2>{question.text}</h2>
-<p className="test-v2-message">
-  {currentMessage}
-</p>
+
+        <p className="test-v2-message">{currentMessage}</p>
+
         <div className="test-v2-options">
           {answerOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => handleChange(question.id, option.value)}
-              className={answers[question.id] === option.value ? "v2-selected-answer" : ""}
+              className={
+                answers[question.id] === option.value
+                  ? "v2-selected-answer"
+                  : ""
+              }
             >
               {option.label}
             </button>
@@ -314,12 +332,15 @@ if (isAnalyzing) {
           </button>
 
           <button onClick={handleNext} className="v2-next-btn">
-            {currentQuestion === questions.length - 1 ? "Ver resultado" : "Siguiente"}
+            {currentQuestion === questions.length - 1
+              ? "Ver resultado"
+              : "Siguiente"}
           </button>
         </div>
       </section>
     </main>
   );
+}
 
 function Metric({ title, value }) {
   return (
@@ -339,6 +360,7 @@ function Metric({ title, value }) {
     </article>
   );
 }
+
 function LockedCard({ title, value }) {
   return (
     <article className="v2-locked-card">
@@ -347,6 +369,7 @@ function LockedCard({ title, value }) {
         <h3>{value}</h3>
         <small>Disponible en premium</small>
       </div>
+
       <div className="v2-lock-overlay">🔒</div>
     </article>
   );
