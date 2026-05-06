@@ -320,7 +320,7 @@ if (isAnalyzing) {
       </section>
     </main>
   );
-  
+
 function Metric({ title, value }) {
   return (
     <article className="v2-metric">
@@ -339,16 +339,6 @@ function Metric({ title, value }) {
     </article>
   );
 }
-  return (
-    <article className="v2-metric">
-      <p>{title}</p>
-      <h3>{value}%</h3>
-      <div className="v2-metric-bar">
-        <div style={{ width: `${value}%` }}></div>
-      </div>
-    </article>
-  );
-
 function LockedCard({ title, value }) {
   return (
     <article className="v2-locked-card">
