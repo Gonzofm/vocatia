@@ -1255,19 +1255,25 @@ body {
 }
 
 .footer-brand {
-  max-width: 520px;
-  margin-bottom: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 60px;
+
+  margin-bottom: 56px;
 }
 
 .footer-brand h2 {
   margin: 0;
+    min-width: 220px;
   font-size: 42px;
   letter-spacing: -1.5px;
   color: white;
 }
 
 .footer-brand p {
-  margin-top: 14px;
+  margin: 0;
+  max-width: 620px;
   color: #94a3b8;
   line-height: 1.7;
   font-size: 17px;
