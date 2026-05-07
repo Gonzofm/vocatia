@@ -11,93 +11,6 @@ function Landing({ onStart }) {
 
   return (
     <main className="landing-page">
-<nav className="vocatia-navbar">
-  <div className="vocatia-navbar-inner">
-
-    <div className="vocatia-logo">
-      Vocatia
-    </div>
-
-    <div className="vocatia-nav-links">
-
-      {/* PRUEBAS */}
-      <div className="vocatia-dropdown">
-        <button className="vocatia-nav-item">
-          Pruebas
-        </button>
-
-        <div className="vocatia-dropdown-menu">
-
-          <button onClick={onStart}>
-            Test Vocacional Flash
-            <span>Disponible</span>
-          </button>
-
-          <button>
-            Test Vocacional 360
-            <span>Próximamente</span>
-          </button>
-
-          <button>
-            Test Competencias Laborales
-            <span>Próximamente</span>
-          </button>
-
-          <button>
-            Test Atención
-            <span>Próximamente</span>
-          </button>
-
-          <button>
-            Test Tipo de Memoria
-            <span>Próximamente</span>
-          </button>
-
-        </div>
-      </div>
-
-      {/* SERVICIOS */}
-      <div className="vocatia-dropdown">
-        <button className="vocatia-nav-item">
-          Servicios Laborales
-        </button>
-
-        <div className="vocatia-dropdown-menu">
-
-          <button>
-            Creador de CV
-            <span>Próximamente</span>
-          </button>
-
-          <button>
-            Análisis IA de Ofertas
-            <span>Próximamente</span>
-          </button>
-
-          <button>
-            Simulador de entrevistas
-            <span>Próximamente</span>
-          </button>
-
-        </div>
-      </div>
-
-      <button className="vocatia-nav-item">
-        Asesor IA
-      </button>
-
-      <button className="vocatia-nav-item">
-        Nosotros
-      </button>
-
-    </div>
-
-    <button className="vocatia-cta-btn" onClick={onStart}>
-      Prueba Gratis
-    </button>
-
-  </div>
-</nav>
 
       <section className="hero-section">
         <div
@@ -125,12 +38,12 @@ function Landing({ onStart }) {
 
           <div className="hero-stats">
             <div>
-              <strong>30</strong>
+              <strong>36</strong>
               <span>Preguntas</span>
             </div>
             <div>
-              <strong>6</strong>
-              <span>Perfiles</span>
+              <strong>100%</strong>
+              <span>Efectividad</span>
             </div>
             <div>
               <strong>5 min</strong>
@@ -189,7 +102,7 @@ function Landing({ onStart }) {
       </section>
 
       <section id="problema" className="section problem-section">
-        <span className="section-pill">El problema</span>
+        <span className="section-pill">¿Inseguridades?</span>
         <h2>Elegir carrera no debería sentirse como adivinar.</h2>
         <p>
           La mayoría decide con poca información, presión externa o miedo a
@@ -205,7 +118,7 @@ function Landing({ onStart }) {
       </section>
 
       <section id="beneficios" className="section">
-        <span className="section-pill">Qué recibes</span>
+        <span className="section-pill">Beneficios</span>
         <h2>Un dashboard para entender tu futuro profesional.</h2>
 
         <div className="feature-grid">
@@ -267,63 +180,6 @@ function Landing({ onStart }) {
           Descubrir mi perfil gratis
         </button>
       </section>
-      <footer className="vocatia-footer">
-  <div className="footer-inner">
-    <div className="footer-brand">
-      <h2>Vocatia</h2>
-      <p>
-        Plataforma de orientación vocacional, empleabilidad e inteligencia
-        profesional para jóvenes, estudiantes e instituciones.
-      </p>
-    </div>
-
-    <div className="footer-grid">
-      <div>
-        <h4>Pruebas</h4>
-        <a>Test Vocacional Flash</a>
-        <a>Test Vocacional 360</a>
-        <a>Test Competencias Laborales</a>
-        <a>Test Atención</a>
-        <a>Test Tipo de Memoria</a>
-      </div>
-
-      <div>
-        <h4>Servicios Laborales</h4>
-        <a>Creador de CV</a>
-        <a>Análisis IA de Ofertas</a>
-        <a>Simulador de entrevistas</a>
-        <a>Roadmaps profesionales</a>
-      </div>
-
-      <div>
-        <h4>Instituciones</h4>
-        <a>Para colegios</a>
-        <a>Para universidades</a>
-        <a>Para psicólogos</a>
-        <a>Programas vocacionales</a>
-      </div>
-
-      <div>
-        <h4>Empresa</h4>
-        <a>Nosotros</a>
-        <a>Contacto</a>
-        <a>Privacidad</a>
-        <a>Términos</a>
-      </div>
-    </div>
-
-    <div className="footer-bottom">
-      <p>© 2026 Vocatia. Todos los derechos reservados.</p>
-
-      <div className="footer-socials">
-        <span>in</span>
-        <span>ig</span>
-        <span>yt</span>
-        <span>tk</span>
-      </div>
-    </div>
-  </div>
-</footer>
     </main>
   );
 }

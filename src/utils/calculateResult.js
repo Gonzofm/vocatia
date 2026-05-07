@@ -1,3 +1,9 @@
+import { questions } from "../data/questions";
+import { careerPaths } from "../data/careerPaths";
+
+const PROFILE_KEYS = ["R", "I", "A", "S", "E", "C"];
+const MAX_SCORE_PER_PROFILE = 30;
+
 export function calculateResult(answers) {
   const scores = {
     R: 0,
@@ -5,93 +11,84 @@ export function calculateResult(answers) {
     A: 0,
     S: 0,
     E: 0,
-    C: 0,
-
-    O: 0,
-    C_big: 0,
-    E_big: 0,
-    A_big: 0,
-    N: 0,
-
-    DINERO: 0,
-    FLEX: 0,
-    IMPACTO: 0,
-    CRECIMIENTO: 0
+    C: 0
   };
 
-  const scoringMap = {
-    1: { R: 2 },
-    2: { I: 2 },
-    3: { A: 2 },
-    4: { S: 2 },
-    5: { E: 2 },
-    6: { C: 2 },
-    7: { I: 1, R: 1 },
-    8: { I: 2 },
-    9: { A: 2 },
-    10: { S: 2 },
-    11: { E: 2 },
-    12: { C: 2 },
+  Object.entries(answers).forEach(([questionId, value]) => {
+    const question = questions.find((q) => q.id === Number(questionId));
 
-    13: { C_big: 2 },
-    14: { O: 2 },
-    15: { A_big: 2 },
-    16: { I: 1 },
-    17: { A: 1, O: 1 },
-    18: { N: 2 },
-    19: { C_big: 2 },
-    20: { E: 1 },
-    21: { E_big: 2 },
-    22: { C: 1 },
-
-    23: { DINERO: 2, E: 1 },
-    24: { FLEX: 2 },
-    25: { FLEX: 1, I: 1 },
-    26: { S: 1, IMPACTO: 2 },
-    27: { C: 2 },
-    28: { E: 2 },
-    29: { O: 2 },
-    30: { CRECIMIENTO: 2 }
-  };
-
-  const careerMap = {
-    R: ["Ingeniería Mecánica", "Arquitectura", "Electricidad"],
-    I: ["Data Science", "Ingeniería de Software", "Investigación"],
-    A: ["Diseño", "Marketing", "Audiovisual"],
-    S: ["Psicología", "Educación", "RRHH"],
-    E: ["Administración", "Negocios", "Ventas"],
-    C: ["Contabilidad", "Finanzas", "Logística"]
-  };
-
-  Object.entries(answers).forEach(([qId, value]) => {
-    const map = scoringMap[Number(qId)];
-    if (!map) return;
-
-    Object.entries(map).forEach(([key, weight]) => {
-      scores[key] += value * weight;
-    });
+    if (question?.category) {
+      scores[question.category] += Number(value);
+    }
   });
 
-  const riasec = ["R", "I", "A", "S", "E", "C"];
+  const sortedProfiles = Object.entries(scores).sort((a, b) => b[1] - a[1]);
 
-  const sorted = riasec
-    .map((k) => ({ type: k, score: scores[k] }))
-    .sort((a, b) => b.score - a.score);
+  const mainProfile = sortedProfiles[0][0];
+  const secondaryProfile = sortedProfiles[1][0];
+  const thirdProfile = sortedProfiles[2][0];
 
-  const main = sorted[0].type;
-  const secondary = sorted[1].type;
+  const mainScorePercent = Math.round(
+    (scores[mainProfile] / MAX_SCORE_PER_PROFILE) * 100
+  );
 
-  const total = riasec.reduce((sum, k) => sum + scores[k], 0);
+  const compatibility = Math.min(
+    96,
+    Math.max(55, Math.round(mainScorePercent))
+  );
 
-const compatibility = Math.min(
-  95,
-  Math.max(65, Math.round((scores[main] / total) * 100 + 45))
-);
+  const userVector = normalizeVector(scores);
+
+  const rankedCareers = careerPaths
+    .map((career) => {
+      const careerVector = normalizeVector(career.weights);
+      const matchScore = calculateSimilarity(userVector, careerVector);
+
+      return {
+        ...career,
+        matchScore: Math.round(matchScore)
+      };
+    })
+    .sort((a, b) => b.matchScore - a.matchScore);
+
+  const topCareers = rankedCareers.slice(0, 5);
+
   return {
-    mainProfile: main,
-    secondaryProfile: secondary,
-    careers: careerMap[main],
+    scores,
+    mainProfile,
+    secondaryProfile,
+    thirdProfile,
     compatibility,
-    scores
+    careers: topCareers.map((career) => career.name),
+    detailedCareers: topCareers,
+    rankedCareers
   };
+}
+
+function normalizeVector(vector) {
+  const total = PROFILE_KEYS.reduce((sum, key) => sum + (vector[key] || 0), 0);
+
+  if (total === 0) {
+    return PROFILE_KEYS.reduce((acc, key) => {
+      acc[key] = 0;
+      return acc;
+    }, {});
+  }
+
+  return PROFILE_KEYS.reduce((acc, key) => {
+    acc[key] = (vector[key] || 0) / total;
+    return acc;
+  }, {});
+}
+
+function calculateSimilarity(userVector, careerVector) {
+  let distance = 0;
+
+  PROFILE_KEYS.forEach((key) => {
+    distance += Math.abs(userVector[key] - careerVector[key]);
+  });
+
+  const similarity = 100 - distance * 55;
+
+  return Math.min(98, Math.max(45, similarity));
 }

@@ -1,42 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  profileNames,
+  profileDescriptions,
+  aiInsights,
+  skillsByProfile
+} from "../data/profiles";
 import { questions } from "../data/questions";
 import { calculateResult } from "../utils/calculateResult";
-
-const profileNames = {
-  R: "Realista / Práctico",
-  I: "Investigador / Analítico",
-  A: "Artístico / Creativo",
-  S: "Social / Ayuda",
-  E: "Emprendedor / Liderazgo",
-  C: "Convencional / Organizativo"
-};
-
-const profileDescriptions = {
-  R: "Tienes afinidad por actividades prácticas, resolución de problemas concretos y trabajo orientado a resultados visibles.",
-  I: "Tu perfil destaca por el análisis, investigación, curiosidad intelectual y resolución de problemas complejos.",
-  A: "Tu fortaleza está en la creatividad, comunicación, diseño, expresión de ideas y pensamiento original.",
-  S: "Tienes orientación hacia ayudar, acompañar, enseñar y generar impacto positivo en otras personas.",
-  E: "Tu perfil se relaciona con liderazgo, persuasión, emprendimiento, negociación y toma de decisiones.",
-  C: "Destacas por organización, estructura, procesos, planificación y orden en la ejecución."
-};
-
-const aiInsights = {
-  R: "Vocatia detectó una preferencia por resolver problemas tangibles. Podrías destacar en carreras donde veas resultados concretos.",
-  I: "Vocatia detectó una fuerte inclinación al análisis, aprendizaje técnico y resolución de problemas. Podrías destacar en áreas de datos, tecnología o investigación.",
-  A: "Vocatia detectó una orientación creativa. Podrías destacar en carreras donde puedas crear, comunicar o transformar ideas.",
-  S: "Vocatia detectó una motivación por ayudar y acompañar personas. Podrías destacar en áreas humanas, educativas o de bienestar.",
-  E: "Vocatia detectó interés por liderazgo, influencia y logro. Podrías destacar en negocios, gestión, emprendimiento o roles comerciales.",
-  C: "Vocatia detectó afinidad por el orden, la estructura y los procesos. Podrías destacar en áreas administrativas, financieras u operativas."
-};
-
-const skillsByProfile = {
-  R: ["Resolución práctica", "Pensamiento técnico", "Precisión", "Autonomía"],
-  I: ["Análisis de datos", "Pensamiento lógico", "Investigación", "Aprendizaje técnico"],
-  A: ["Creatividad", "Comunicación visual", "Storytelling", "Innovación"],
-  S: ["Comunicación empática", "Escucha activa", "Orientación al servicio", "Trabajo en equipo"],
-  E: ["Liderazgo", "Negociación", "Toma de decisiones", "Estrategia"],
-  C: ["Organización", "Gestión de procesos", "Atención al detalle", "Planificación"]
-};
 
 const answerOptions = [
   { label: "Nada de acuerdo", value: 1 },
@@ -61,6 +31,7 @@ function Test() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
 
+  const pageRef = useRef(null);
   const question = questions[currentQuestion];
 
   const progress = Math.round(
@@ -69,6 +40,10 @@ function Test() {
 
   const currentMessage =
     dynamicMessages[currentQuestion % dynamicMessages.length];
+
+  useEffect(() => {
+    pageRef.current?.focus();
+  }, [currentQuestion]);
 
   const handleChange = (questionId, value) => {
     setAnswers({
@@ -98,6 +73,12 @@ function Test() {
   const handleBack = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleNext();
     }
   };
 
@@ -138,8 +119,6 @@ function Test() {
     const riasecScores = Object.entries(result.scores).filter(([key]) =>
       ["R", "I", "A", "S", "E", "C"].includes(key)
     );
-
-    const maxScore = Math.max(...riasecScores.map(([, value]) => value));
 
     return (
       <main className="result-v2-page">
@@ -193,7 +172,7 @@ function Test() {
 
             <div className="v2-radar">
               {riasecScores.map(([key, value]) => {
-                const percent = Math.round((value / maxScore) * 100);
+                const percent = Math.round((value / 30) * 100);
 
                 return (
                   <div className="v2-radar-row" key={key}>
@@ -218,16 +197,27 @@ function Test() {
             </div>
 
             <div className="v2-careers">
-              {result.careers.map((career, index) => (
-                <div className="v2-career-item" key={index}>
-                  <span>{index + 1}</span>
+             {result.detailedCareers.map((career, index) => (
+  <div className="v2-career-item premium-career-card" key={career.name}>
+    <span>{index + 1}</span>
 
-                  <div>
-                    <strong>{career}</strong>
-                    <p>Alta compatibilidad inicial con tu perfil.</p>
-                  </div>
-                </div>
-              ))}
+    <div>
+      <div className="career-header">
+        <strong>{career.name}</strong>
+        <small>{career.matchScore}% match</small>
+      </div>
+
+      <p>{career.description}</p>
+
+      <div className="career-tags">
+        <em>{career.area}</em>
+        {career.skills.slice(0, 3).map((skill) => (
+          <em key={skill}>{skill}</em>
+        ))}
+      </div>
+    </div>
+  </div>
+))}
             </div>
           </article>
         </section>
@@ -292,7 +282,12 @@ function Test() {
   }
 
   return (
-    <main className="test-v2-page">
+    <main
+      ref={pageRef}
+      className="test-v2-page"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+    >
       <section key={currentQuestion} className="test-v2-card fade-question">
         <div className="test-v2-top">
           <span>
@@ -343,10 +338,38 @@ function Test() {
 }
 
 function Metric({ title, value }) {
+  const content = {
+    "Afinidad con perfil principal": {
+      label: "Perfil dominante detectado",
+      description:
+        "Tu patrón de respuestas muestra una inclinación sólida hacia este tipo de perfil profesional."
+    },
+
+    "Claridad de intereses": {
+      label: "Nivel de claridad vocacional",
+      description:
+        "Tus intereses muestran dirección y coherencia, facilitando una elección profesional más segura."
+    },
+
+    "Consistencia vocacional": {
+      label: "Coherencia de personalidad laboral",
+      description:
+        "Tus respuestas mantienen estabilidad entre motivaciones, preferencias y estilo de trabajo."
+    },
+
+    "Potencial de exploración laboral": {
+      label: "Proyección profesional futura",
+      description:
+        "Tu perfil tiene compatibilidad con múltiples rutas profesionales y oportunidades de crecimiento."
+    }
+  };
+
+  const current = content[title];
+
   return (
     <article className="v2-metric">
       <div className="metric-top">
-        <p>{title}</p>
+        <p>{current.label}</p>
         <h3>{value}%</h3>
       </div>
 
@@ -354,9 +377,7 @@ function Metric({ title, value }) {
         <div style={{ width: `${value}%` }}></div>
       </div>
 
-      <span className="metric-description">
-        Resultado calculado según tus patrones de respuesta.
-      </span>
+      <span className="metric-description">{current.description}</span>
     </article>
   );
 }

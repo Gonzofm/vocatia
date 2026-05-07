@@ -1,193 +1,201 @@
 export const questions = [
-  // ================= R - REALISTA =================
+  // =========================
+  // INTERESES NATURALES
+  // =========================
+
   {
     id: 1,
-    text: "Disfruto trabajar en proyectos donde pueda construir, reparar o manipular cosas físicas.",
-    category: "R"
+    text: "Me llama la atención entender cómo funcionan las cosas internamente.",
+    category: "I"
   },
   {
     id: 2,
-    text: "Prefiero resolver problemas prácticos antes que discutir ideas abstractas.",
-    category: "R"
+    text: "Disfruto crear ideas nuevas o soluciones poco comunes.",
+    category: "A"
   },
   {
     id: 3,
-    text: "Me interesa entender cómo funcionan máquinas, herramientas o sistemas técnicos.",
-    category: "R"
+    text: "Me interesa ayudar a personas a resolver problemas importantes.",
+    category: "S"
   },
   {
     id: 4,
-    text: "Me sentiría cómodo trabajando en entornos dinámicos y operativos.",
-    category: "R"
+    text: "Me motivan actividades donde puedo tomar decisiones rápidamente.",
+    category: "E"
   },
   {
     id: 5,
-    text: "Disfruto actividades donde puedo ver resultados concretos rápidamente.",
-    category: "R"
+    text: "Prefiero tareas donde el orden y la precisión son importantes.",
+    category: "C"
   },
   {
     id: 6,
-    text: "Me llaman la atención profesiones relacionadas con ingeniería, construcción o tecnología aplicada.",
+    text: "Disfruto construir, reparar o manipular objetos físicos.",
     category: "R"
   },
-
-  // ================= I - INVESTIGADOR =================
   {
     id: 7,
-    text: "Disfruto analizar información y encontrar patrones o explicaciones.",
+    text: "Puedo pasar horas investigando un tema que me interesa.",
     category: "I"
   },
   {
     id: 8,
-    text: "Me gusta investigar temas por mi cuenta hasta entenderlos completamente.",
-    category: "I"
+    text: "Me gusta expresarme mediante diseño, escritura o contenido visual.",
+    category: "A"
   },
   {
     id: 9,
-    text: "Suelo cuestionar cómo funcionan las cosas en lugar de aceptarlas fácilmente.",
-    category: "I"
+    text: "Las personas suelen buscarme cuando necesitan apoyo o consejo.",
+    category: "S"
   },
   {
     id: 10,
-    text: "Me atraen carreras relacionadas con ciencia, datos, tecnología o investigación.",
-    category: "I"
+    text: "Me emociona asumir retos donde puedo destacar frente a otros.",
+    category: "E"
   },
   {
     id: 11,
-    text: "Prefiero tareas que impliquen pensar y resolver problemas complejos.",
-    category: "I"
+    text: "Prefiero ambientes organizados antes que improvisados.",
+    category: "C"
   },
   {
     id: 12,
-    text: "Aprender cosas nuevas constantemente me resulta motivador.",
-    category: "I"
+    text: "Me siento cómodo trabajando con herramientas, equipos o tecnología.",
+    category: "R"
   },
 
-  // ================= A - ARTÍSTICO =================
+  // =========================
+  // ESTILO DE TRABAJO
+  // =========================
+
   {
     id: 13,
-    text: "Me gusta expresar ideas de forma creativa o diferente.",
+    text: "Prefiero trabajos donde cada día sea diferente.",
     category: "A"
   },
   {
     id: 14,
-    text: "Disfruto actividades relacionadas con diseño, contenido, música o comunicación visual.",
-    category: "A"
+    text: "Disfruto resolver problemas complejos paso a paso.",
+    category: "I"
   },
   {
     id: 15,
-    text: "Me aburre seguir estructuras demasiado rígidas.",
-    category: "A"
+    text: "Me gusta trabajar directamente con personas más que con sistemas.",
+    category: "S"
   },
   {
     id: 16,
-    text: "Frecuentemente tengo ideas nuevas o formas distintas de hacer las cosas.",
-    category: "A"
+    text: "Me adapto bien a ambientes competitivos.",
+    category: "E"
   },
   {
     id: 17,
-    text: "Me atraen profesiones donde pueda crear, comunicar o innovar.",
-    category: "A"
+    text: "Me siento más tranquilo cuando tengo una estructura clara.",
+    category: "C"
   },
   {
     id: 18,
-    text: "Valoro mucho la autenticidad y libertad para expresarme.",
-    category: "A"
+    text: "Prefiero actividades prácticas antes que solo teóricas.",
+    category: "R"
   },
-
-  // ================= S - SOCIAL =================
   {
     id: 19,
-    text: "Cuando alguien tiene un problema, suelo intentar ayudar.",
-    category: "S"
+    text: "Disfruto presentar ideas o convencer a otras personas.",
+    category: "E"
   },
   {
     id: 20,
-    text: "Disfruto escuchar y comprender cómo se sienten otras personas.",
-    category: "S"
+    text: "Me gusta analizar información antes de tomar decisiones importantes.",
+    category: "I"
   },
+
+  // =========================
+  // PERSONALIDAD PROFESIONAL
+  // =========================
+
   {
     id: 21,
-    text: "Me sentiría cómodo trabajando en educación, salud o desarrollo humano.",
-    category: "S"
+    text: "Cuando trabajo en grupo, suelo tomar iniciativa naturalmente.",
+    category: "E"
   },
   {
     id: 22,
-    text: "Me gusta trabajar en equipo y colaborar con otras personas.",
-    category: "S"
+    text: "Me incomodan los errores pequeños o detalles mal hechos.",
+    category: "C"
   },
   {
     id: 23,
-    text: "Siento satisfacción cuando ayudo a alguien a mejorar o crecer.",
-    category: "S"
+    text: "Disfruto explorar soluciones creativas incluso si toman más tiempo.",
+    category: "A"
   },
   {
     id: 24,
-    text: "Las relaciones humanas son importantes para sentirme motivado laboralmente.",
+    text: "Me interesa comprender emociones y comportamientos humanos.",
     category: "S"
   },
-
-  // ================= E - EMPRENDEDOR =================
   {
     id: 25,
-    text: "En situaciones grupales suelo tomar iniciativa rápidamente.",
-    category: "E"
+    text: "Me considero una persona lógica y analítica.",
+    category: "I"
   },
   {
     id: 26,
-    text: "Me motiva alcanzar metas ambiciosas y ver resultados.",
-    category: "E"
+    text: "Me siento cómodo usando tecnología nueva sin mucha ayuda.",
+    category: "R"
   },
   {
     id: 27,
-    text: "Disfruto convencer, negociar o liderar personas.",
+    text: "Me gusta liderar proyectos o coordinar actividades.",
     category: "E"
   },
   {
     id: 28,
-    text: "Me interesan negocios, emprendimiento o gestión de proyectos.",
-    category: "E"
+    text: "Necesito sentir que mi trabajo tiene impacto real.",
+    category: "S"
   },
+
+  // =========================
+  // MOTIVACIÓN Y FUTURO
+  // =========================
+
   {
     id: 29,
-    text: "Me sentiría cómodo tomando decisiones importantes bajo presión.",
-    category: "E"
+    text: "Me gustaría tener una profesión donde pueda innovar constantemente.",
+    category: "A"
   },
   {
     id: 30,
-    text: "Me gusta competir y buscar oportunidades de crecimiento.",
-    category: "E"
+    text: "Valoro carreras que ofrezcan estabilidad y crecimiento sostenido.",
+    category: "C"
   },
-
-  // ================= C - CONVENCIONAL =================
   {
     id: 31,
-    text: "Prefiero trabajar con orden, estructura y procesos claros.",
-    category: "C"
+    text: "Me atraen profesiones relacionadas con ciencia, datos o investigación.",
+    category: "I"
   },
   {
     id: 32,
-    text: "Me siento cómodo organizando información o planificando tareas.",
-    category: "C"
+    text: "Me gustaría crear algo propio o emprender en el futuro.",
+    category: "E"
   },
   {
     id: 33,
-    text: "Suelo prestar atención a detalles que otros pasan por alto.",
-    category: "C"
+    text: "Disfrutaría una profesión donde pueda mejorar la vida de otros.",
+    category: "S"
   },
   {
     id: 34,
-    text: "Disfruto ambientes donde todo tiene una lógica y estructura definida.",
-    category: "C"
+    text: "Me interesa trabajar en proyectos concretos y visibles.",
+    category: "R"
   },
   {
     id: 35,
-    text: "Me atraen profesiones relacionadas con administración, finanzas o logística.",
-    category: "C"
+    text: "Me gustaría combinar creatividad con estrategia.",
+    category: "A"
   },
   {
     id: 36,
-    text: "Tener organización y estabilidad en mi trabajo es importante para mí.",
-    category: "C"
+    text: "Prefiero trabajos donde pueda desarrollar experiencia especializada.",
+    category: "I"
   }
 ];
