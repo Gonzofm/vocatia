@@ -3,6 +3,7 @@ import { careerPaths } from "../data/careerPaths";
 
 const PROFILE_KEYS = ["R", "I", "A", "S", "E", "C"];
 const MAX_SCORE_PER_PROFILE = 30;
+const INITIAL_CAREER_LIMIT = 12;
 
 export function calculateResult(answers) {
   const scores = {
@@ -43,15 +44,18 @@ export function calculateResult(answers) {
     .map((career) => {
       const careerVector = normalizeVector(career.weights);
       const matchScore = calculateSimilarity(userVector, careerVector);
+      const profileFit = getProfileFit(career.weights, sortedProfiles);
 
       return {
         ...career,
-        matchScore: Math.round(matchScore)
+        matchScore: Math.round(matchScore),
+        profileFit
       };
     })
     .sort((a, b) => b.matchScore - a.matchScore);
 
-  const topCareers = rankedCareers.slice(0, 5);
+  const diverseCareers = getDiverseCareers(rankedCareers, INITIAL_CAREER_LIMIT);
+  const areaBreakdown = buildAreaBreakdown(rankedCareers);
 
   return {
     scores,
@@ -59,9 +63,10 @@ export function calculateResult(answers) {
     secondaryProfile,
     thirdProfile,
     compatibility,
-    careers: topCareers.map((career) => career.name),
-    detailedCareers: topCareers,
-    rankedCareers
+    careers: diverseCareers.map((career) => career.name),
+    detailedCareers: diverseCareers,
+    rankedCareers,
+    areaBreakdown
   };
 }
 
@@ -91,4 +96,95 @@ function calculateSimilarity(userVector, careerVector) {
   const similarity = 100 - distance * 55;
 
   return Math.min(98, Math.max(45, similarity));
+}
+
+function getProfileFit(weights, sortedProfiles) {
+  const [mainProfile, secondaryProfile, thirdProfile] = sortedProfiles.map(
+    ([key]) => key
+  );
+
+  const weightedScore =
+    (weights[mainProfile] || 0) * 0.55 +
+    (weights[secondaryProfile] || 0) * 0.3 +
+    (weights[thirdProfile] || 0) * 0.15;
+
+  return Math.round(Math.min(100, Math.max(35, weightedScore * 1.5)));
+}
+
+function getDiverseCareers(rankedCareers, limit) {
+  const selected = [];
+  const areas = new Map();
+
+  rankedCareers.forEach((career) => {
+    const broadArea = getBroadArea(career.area);
+    const areaCount = areas.get(broadArea) || 0;
+
+    if (selected.length < limit && areaCount < 2) {
+      selected.push({ ...career, broadArea });
+      areas.set(broadArea, areaCount + 1);
+    }
+  });
+
+  rankedCareers.forEach((career) => {
+    if (
+      selected.length < limit &&
+      !selected.some((selectedCareer) => selectedCareer.name === career.name)
+    ) {
+      selected.push({ ...career, broadArea: getBroadArea(career.area) });
+    }
+  });
+
+  return selected;
+}
+
+function buildAreaBreakdown(rankedCareers) {
+  const areaMap = rankedCareers.reduce((acc, career) => {
+    const area = getBroadArea(career.area);
+    const current = acc.get(area) || {
+      area,
+      careers: [],
+      bestScore: 0,
+      averageScore: 0
+    };
+
+    current.careers.push(career);
+    current.bestScore = Math.max(current.bestScore, career.matchScore);
+    current.averageScore = Math.round(
+      current.careers.reduce((sum, item) => sum + item.matchScore, 0) /
+        current.careers.length
+    );
+
+    acc.set(area, current);
+    return acc;
+  }, new Map());
+
+  return Array.from(areaMap.values())
+    .sort((a, b) => b.averageScore - a.averageScore)
+    .map((area) => ({
+      ...area,
+      careers: area.careers.slice(0, 4)
+    }));
+}
+
+function getBroadArea(area) {
+  if (area.includes("Salud")) return "Salud";
+  if (area.includes("Tecnolog")) return "Tecnologia";
+  if (area.includes("Ingenier")) return "Ingenierias";
+  if (area.includes("Negocios") || area.includes("Finanzas")) return "Negocios";
+  if (
+    area.includes("Humanidades") ||
+    area.includes("Social") ||
+    area.includes("Educaci")
+  ) {
+    return "Humanidades y social";
+  }
+  if (
+    area.includes("Comunicaci") ||
+    area.includes("Arte") ||
+    area.includes("Dis")
+  ) {
+    return "Creatividad";
+  }
+
+  return area.split("/")[0].trim();
 }

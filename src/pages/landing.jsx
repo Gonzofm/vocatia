@@ -1,29 +1,55 @@
-import { useEffect, useState } from "react";
+const pricingPlans = [
+  {
+    name: "Gratis",
+    price: "S/ 0",
+    description: "Ideal para descubrir tu perfil principal y empezar a explorar.",
+    features: [
+      "Test vocacional de 36 preguntas",
+      "Perfil dominante y complementario",
+      "Dashboard basico de resultados",
+      "Carreras sugeridas por afinidad"
+    ],
+    highlighted: false
+  },
+  {
+    name: "Plan Premium Vocatia",
+    price: "S/ 49.90",
+    description: "Un mes de orientacion vocacional, recursos y acompañamiento.",
+    features: [
+      "Informe vocacional premium personalizado",
+      "Sesion mensual con psicologo asesor",
+      "Contenido semanal de orientacion",
+      "Recursos descargables",
+      "Acompañamiento durante el mes"
+    ],
+    highlighted: true
+  },
+  {
+    name: "Premium + Asesoria",
+    price: "Proximamente",
+    description: "Informe completo y revision personalizada por videollamada.",
+    features: [
+      "Todo lo del informe premium",
+      "Sesion de 30 minutos",
+      "Revision de dudas con orientador",
+      "Recomendaciones finales por WhatsApp"
+    ],
+    highlighted: false
+  }
+];
 
 function Landing({ onStart }) {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <main className="landing-page">
+    <main className="landing-page conversion-landing">
+      <section className="hero-section commercial-hero">
+        <div className="hero-content">
+          <span className="pill">Test gratis + Plan Premium Vocatia S/49.90</span>
 
-      <section className="hero-section">
-        <div
-          className="hero-content"
-          style={{ transform: `translateY(${scrollY * -0.02}px)` }}
-        >
-          <span className="pill">Orientación vocacional + futuro laboral</span>
-
-          <h1>No elijas tu carrera a ciegas.</h1>
+          <h1>Descubre que carrera estudiar en menos de 5 minutos.</h1>
 
           <p>
-            Descubre tu perfil vocacional, carreras compatibles y una ruta
-            profesional clara en menos de 5 minutos.
+            Vocatia combina intereses, personalidad y rutas profesionales para
+            darte un dashboard claro y un plan premium de orientacion vocacional.
           </p>
 
           <div className="hero-actions">
@@ -31,8 +57,8 @@ function Landing({ onStart }) {
               Hacer test gratis
             </button>
 
-            <a href="#como-funciona" className="secondary-btn">
-              Ver cómo funciona
+            <a href="#precios" className="secondary-btn">
+              Ver planes
             </a>
           </div>
 
@@ -42,142 +68,175 @@ function Landing({ onStart }) {
               <span>Preguntas</span>
             </div>
             <div>
-              <strong>100%</strong>
-              <span>Efectividad</span>
+              <strong>12+</strong>
+              <span>Carreras sugeridas</span>
             </div>
             <div>
-              <strong>5 min</strong>
-              <span>Duración</span>
+              <strong>S/49.90</strong>
+              <span>Plan premium</span>
             </div>
           </div>
         </div>
 
-        <div
-          className="hero-preview"
-          style={{ transform: `translateY(${scrollY * 0.02}px)` }}
-        >
-          <div className="glow"></div>
-
+        <div className="commercial-preview">
           <div className="preview-card">
             <div className="preview-top">
-              <span>Análisis completado</span>
+              <span>Resultado inmediato</span>
               <strong>86%</strong>
             </div>
 
             <p className="preview-label">Perfil sugerido</p>
-            <h2>Investigador / Analítico</h2>
+            <h2>Investigador / Analitico</h2>
 
-            <div className="progress-area">
-              <div className="progress-head">
-                <span>Compatibilidad vocacional</span>
-                <strong>Alta</strong>
-              </div>
-
-              <div className="progress-bar">
-                <div></div>
-              </div>
-            </div>
-
-            <div className="career-grid">
+            <div className="conversion-preview-list">
               <div>
                 <strong>Data Science</strong>
                 <span>Alta afinidad</span>
               </div>
-
               <div>
-                <strong>Software</strong>
-                <span>Ruta sugerida</span>
+                <strong>Ingenieria de Software</strong>
+                <span>Ruta recomendada</span>
+              </div>
+              <div>
+                <strong>Plan Premium Vocatia</strong>
+                <span>Informe, sesion y recursos</span>
               </div>
             </div>
-          </div>
-
-          <div className="floating-card floating-one">
-            Perfil vocacional claro
-          </div>
-
-          <div className="floating-card floating-two">
-            Plan profesional personalizado
           </div>
         </div>
       </section>
 
-      <section id="problema" className="section problem-section">
-        <span className="section-pill">¿Inseguridades?</span>
-        <h2>Elegir carrera no debería sentirse como adivinar.</h2>
+      <section className="section conversion-band">
+        <span className="section-pill">Hecho para Peru</span>
+        <h2>Para escolares, egresados y universitarios indecisos.</h2>
         <p>
-          La mayoría decide con poca información, presión externa o miedo a
-          equivocarse. Vocatia convierte esas dudas en datos útiles.
+          Empieza gratis, mira si el resultado te ayuda y activa el plan premium
+          si quieres acompañamiento, recursos y una ruta mas completa.
         </p>
 
         <div className="problem-grid">
-          <div>No sabes qué estudiar</div>
-          <div>Tienes miedo a equivocarte</div>
-          <div>No conoces el mercado laboral</div>
-          <div>Sientes presión externa</div>
+          <div>Miedo a elegir mal</div>
+          <div>Presion familiar</div>
+          <div>Demasiadas carreras</div>
+          <div>Poca informacion laboral</div>
         </div>
       </section>
 
       <section id="beneficios" className="section">
-        <span className="section-pill">Beneficios</span>
-        <h2>Un dashboard para entender tu futuro profesional.</h2>
+        <span className="section-pill">Que recibes</span>
+        <h2>Un resultado util, no solo una etiqueta.</h2>
 
         <div className="feature-grid">
           <article>
             <h3>Perfil vocacional</h3>
-            <p>Identifica tu estilo principal y secundario de decisión.</p>
+            <p>Identifica tu estilo dominante, secundario y areas de afinidad.</p>
           </article>
 
           <article>
-            <h3>Carreras sugeridas</h3>
-            <p>Explora carreras compatibles con tus intereses y personalidad.</p>
+            <h3>Carreras compatibles</h3>
+            <p>Explora rutas recomendadas por match, area y habilidades.</p>
           </article>
 
           <article>
-            <h3>Métricas visuales</h3>
-            <p>Revisa compatibilidad, claridad y potencial de desarrollo.</p>
+            <h3>Dashboard interactivo</h3>
+            <p>Filtra carreras, revisa porcentajes y compara opciones.</p>
           </article>
 
           <article>
             <h3>Informe premium</h3>
-            <p>Desbloquea ruta profesional, riesgos y plan de acción.</p>
+            <p>Desbloquea informe, sesion mensual, recursos y acompañamiento.</p>
           </article>
+        </div>
+      </section>
+
+      <section id="precios" className="section pricing-section">
+        <span className="section-pill">Planes</span>
+        <h2>Plan Premium Vocatia — S/49.90</h2>
+        <p className="pricing-subcopy">
+          Incluye informe vocacional premium personalizado, sesion mensual con
+          psicologo asesor especializado, contenido semanal, recursos
+          descargables, acompañamiento durante el mes y plan de accion para
+          tomar una decision con mayor claridad.
+        </p>
+
+        <div className="pricing-grid">
+          {pricingPlans.map((plan) => (
+            <article
+              className={plan.highlighted ? "pricing-card pricing-featured" : "pricing-card"}
+              key={plan.name}
+            >
+              <span>{plan.name}</span>
+              <h3>{plan.price}</h3>
+              <p>{plan.description}</p>
+
+              <ul>
+                {plan.features.map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+
+              <button className="primary-btn" onClick={onStart}>
+                {plan.highlighted ? "Probar gratis primero" : "Empezar"}
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
       <section id="como-funciona" className="section">
         <span className="section-pill">Proceso simple</span>
-        <h2>Cómo funciona Vocatia</h2>
+        <h2>Como funciona Vocatia</h2>
 
         <div className="steps-grid">
           <article>
             <span>01</span>
             <h3>Responde el test</h3>
-            <p>Analizamos intereses, personalidad y estilo laboral.</p>
+            <p>36 preguntas compactas, sin registro inicial.</p>
           </article>
 
           <article>
             <span>02</span>
-            <h3>Recibe tu resultado</h3>
-            <p>Obtén un dashboard con perfil y carreras recomendadas.</p>
+            <h3>Recibe tu dashboard</h3>
+            <p>Perfil, metricas y carreras compatibles al instante.</p>
           </article>
 
           <article>
             <span>03</span>
-            <h3>Construye tu ruta</h3>
-            <p>Accede a un plan profesional para tomar acción.</p>
+            <h3>Desbloquea premium</h3>
+            <p>Paga con Culqi y accede al paquete premium de orientacion vocacional.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="section faq-section">
+        <span className="section-pill">Preguntas frecuentes</span>
+        <h2>Antes de empezar</h2>
+
+        <div className="faq-grid">
+          <article>
+            <h3>Esto reemplaza a un psicologo?</h3>
+            <p>No. Es una herramienta de orientacion inicial para tomar mejores decisiones.</p>
+          </article>
+          <article>
+            <h3>Como se procesa el pago?</h3>
+            <p>La estructura usa Culqi Checkout y un backend seguro para crear el cargo.</p>
+          </article>
+          <article>
+            <h3>Que recibo despues del pago?</h3>
+            <p>Accedes al dashboard premium con informe, sesion, recursos y contenido semanal.</p>
           </article>
         </div>
       </section>
 
       <section className="final-cta">
-        <h2>Empieza con claridad hoy.</h2>
+        <h2>Empieza gratis y decide con mas claridad.</h2>
         <p>
-          Ideal para escolares, egresados, universitarios indecisos y personas
-          que quieren tomar mejores decisiones sobre su futuro.
+          Haz el test, revisa tu resultado y desbloquea el informe premium solo
+          si quieres una ruta mas completa.
         </p>
 
         <button className="primary-btn" onClick={onStart}>
-          Descubrir mi perfil gratis
+          Hacer test gratis
         </button>
       </section>
     </main>

@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import PremiumPreview from "../components/PremiumPreview";
+import PremiumDashboard from "../components/PremiumDashboard";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   profileNames,
   profileDescriptions,
@@ -25,11 +27,13 @@ const dynamicMessages = [
   "Identificando fortalezas principales..."
 ];
 
-function Test() {
+function Test({ premiumUnlocked, premiumLead, onUnlockPremium, onResultReady }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
+  const [activeArea, setActiveArea] = useState("all");
+  const [selectedCareerName, setSelectedCareerName] = useState(null);
 
   const pageRef = useRef(null);
   const question = questions[currentQuestion];
@@ -45,40 +49,52 @@ function Test() {
     pageRef.current?.focus();
   }, [currentQuestion]);
 
+  useLayoutEffect(() => {
+    if (!result || isAnalyzing) return;
+
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    const frameId = requestAnimationFrame(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [result, isAnalyzing]);
+
   const handleChange = (questionId, value) => {
-    setAnswers({
+    const nextAnswers = {
       ...answers,
       [questionId]: value
-    });
-  };
+    };
 
-  const handleNext = () => {
-    if (!answers[question.id]) {
-      alert("Selecciona una respuesta para continuar.");
-      return;
-    }
+    setAnswers(nextAnswers);
 
     if (currentQuestion === questions.length - 1) {
       setIsAnalyzing(true);
 
       setTimeout(() => {
-        setResult(calculateResult(answers));
+        const nextResult = calculateResult(nextAnswers);
+
+        setActiveArea("all");
+        setSelectedCareerName(nextResult.detailedCareers[0]?.name || null);
+        setResult(nextResult);
+        onResultReady?.(nextResult);
         setIsAnalyzing(false);
       }, 2600);
     } else {
-      setCurrentQuestion(currentQuestion + 1);
+      setTimeout(() => {
+        setCurrentQuestion((questionIndex) => questionIndex + 1);
+      }, 180);
     }
   };
 
   const handleBack = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleNext();
     }
   };
 
@@ -119,6 +135,28 @@ function Test() {
     const riasecScores = Object.entries(result.scores).filter(([key]) =>
       ["R", "I", "A", "S", "E", "C"].includes(key)
     );
+    const areaFilters = result.areaBreakdown || [];
+    const currentArea = areaFilters.find((area) => area.area === activeArea);
+    const visibleCareers =
+      activeArea === "all"
+        ? result.detailedCareers
+        : currentArea?.careers || result.detailedCareers;
+    const selectedCareer =
+      result.rankedCareers.find((career) => career.name === selectedCareerName) ||
+      visibleCareers[0];
+    const profileMix = [main, secondary, result.thirdProfile]
+      .map((profile) => profileNames[profile])
+      .join(" + ");
+
+    const handleAreaChange = (area) => {
+      const nextCareers =
+        area === "all"
+          ? result.detailedCareers
+          : areaFilters.find((item) => item.area === area)?.careers || [];
+
+      setActiveArea(area);
+      setSelectedCareerName(nextCareers[0]?.name || null);
+    };
 
     return (
       <main className="result-v2-page">
@@ -132,8 +170,12 @@ function Test() {
             </p>
           </div>
 
-          <button className="v2-premium-btn">
-            Desbloquear informe completo 🔒
+          <button
+            className="v2-premium-btn"
+            disabled={premiumUnlocked}
+            onClick={premiumUnlocked ? undefined : onUnlockPremium}
+          >
+            {premiumUnlocked ? "Informe premium activo" : "Desbloquear informe completo 🔒"}
           </button>
         </section>
 
@@ -161,6 +203,102 @@ function Test() {
           <Metric title="Claridad de intereses" value={clarity} />
           <Metric title="Consistencia vocacional" value={employability} />
           <Metric title="Potencial de exploración laboral" value={salaryFit} />
+        </section>
+
+        <section className="v2-explorer-panel">
+          <div className="v2-section-head">
+            <span className="v2-pill">Explorador vocacional</span>
+            <h2>Compara rutas por área profesional</h2>
+            <p>
+              Tu combinación {profileMix} abre varias rutas posibles. Filtra por
+              área, revisa el match y selecciona una carrera para ver su lectura
+              inicial.
+            </p>
+          </div>
+
+          <div className="v2-area-tabs">
+            <button
+              className={activeArea === "all" ? "v2-active-tab" : ""}
+              onClick={() => handleAreaChange("all")}
+            >
+              Todas
+            </button>
+
+            {areaFilters.map((area) => (
+              <button
+                className={activeArea === area.area ? "v2-active-tab" : ""}
+                key={area.area}
+                onClick={() => handleAreaChange(area.area)}
+              >
+                {area.area}
+                <span>{area.averageScore}%</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="v2-explorer-grid">
+            <div className="v2-careers v2-career-list">
+              {visibleCareers.map((career, index) => (
+                <button
+                  className={
+                    selectedCareer?.name === career.name
+                      ? "v2-career-item premium-career-card v2-selected-career"
+                      : "v2-career-item premium-career-card"
+                  }
+                  key={career.name}
+                  onClick={() => setSelectedCareerName(career.name)}
+                >
+                  <span>{index + 1}</span>
+
+                  <div>
+                    <div className="career-header">
+                      <strong>{career.name}</strong>
+                      <small>{career.matchScore}% match</small>
+                    </div>
+
+                    <p>{career.description}</p>
+
+                    <div className="career-tags">
+                      <em>{career.area}</em>
+                      {career.skills.slice(0, 3).map((skill) => (
+                        <em key={skill}>{skill}</em>
+                      ))}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {selectedCareer && (
+              <article className="v2-career-detail">
+                <span className="v2-small-label">Carrera seleccionada</span>
+                <h3>{selectedCareer.name}</h3>
+                <p>{selectedCareer.description}</p>
+
+                <div className="v2-detail-score">
+                  <strong>{selectedCareer.matchScore}%</strong>
+                  <span>compatibilidad estimada</span>
+                </div>
+
+                <div className="v2-detail-grid">
+                  <div>
+                    <small>Área</small>
+                    <strong>{selectedCareer.area}</strong>
+                  </div>
+                  <div>
+                    <small>Ajuste de perfil</small>
+                    <strong>{selectedCareer.profileFit}%</strong>
+                  </div>
+                </div>
+
+                <div className="v2-skills">
+                  {selectedCareer.skills.map((skill) => (
+                    <span key={skill}>{skill}</span>
+                  ))}
+                </div>
+              </article>
+            )}
+          </div>
         </section>
 
         <section className="v2-two-columns">
@@ -192,32 +330,20 @@ function Test() {
 
           <article className="v2-card">
             <div className="v2-section-head">
-              <span className="v2-pill">Carreras sugeridas</span>
-              <h2>Primeras rutas compatibles</h2>
+              <span className="v2-pill">Mapa de áreas</span>
+              <h2>Dónde tienes mayor apertura</h2>
             </div>
 
-            <div className="v2-careers">
-             {result.detailedCareers.map((career, index) => (
-  <div className="v2-career-item premium-career-card" key={career.name}>
-    <span>{index + 1}</span>
-
-    <div>
-      <div className="career-header">
-        <strong>{career.name}</strong>
-        <small>{career.matchScore}% match</small>
-      </div>
-
-      <p>{career.description}</p>
-
-      <div className="career-tags">
-        <em>{career.area}</em>
-        {career.skills.slice(0, 3).map((skill) => (
-          <em key={skill}>{skill}</em>
-        ))}
-      </div>
-    </div>
-  </div>
-))}
+            <div className="v2-area-breakdown">
+              {areaFilters.slice(0, 6).map((area) => (
+                <button key={area.area} onClick={() => handleAreaChange(area.area)}>
+                  <div>
+                    <strong>{area.area}</strong>
+                    <span>{area.careers.length} rutas destacadas</span>
+                  </div>
+                  <small>{area.averageScore}%</small>
+                </button>
+              ))}
             </div>
           </article>
         </section>
@@ -251,29 +377,21 @@ function Test() {
           </article>
         </section>
 
-        <section className="v2-premium-zone">
-          <div className="v2-premium-copy">
-            <span className="v2-premium-pill">Premium</span>
-            <h2>Tu informe completo está bloqueado</h2>
-            <p>
-              Desbloquea el análisis avanzado con riesgo de mala elección,
-              carreras con mejor retorno, empleabilidad, ruta de 90 días,
-              habilidades urgentes y plan de acción.
-            </p>
-          </div>
-
-          <div className="v2-locked-grid">
-            <LockedCard title="Riesgo de mala elección" value={`${decisionRisk}%`} />
-            <LockedCard title="Top carreras con mejor retorno" value="Top 5" />
-            <LockedCard title="Ruta profesional de 90 días" value="Lista" />
-            <LockedCard title="Habilidades urgentes" value="8 skills" />
-            <LockedCard title="Sueldos estimados por carrera" value="S/••••" />
-            <LockedCard title="Plan final descargable" value="PDF" />
-          </div>
-
-          <button className="v2-premium-btn">Ver mi informe completo 🔒</button>
-        </section>
-
+ <PremiumPreview
+  decisionRisk={decisionRisk}
+  employability={employability}
+  isUnlocked={premiumUnlocked}
+  onUnlock={onUnlockPremium}
+/>  
+        {premiumUnlocked && (
+          <PremiumDashboard
+            result={result}
+            decisionRisk={decisionRisk}
+            employability={employability}
+            clarity={clarity}
+            lead={premiumLead}
+          />
+        )}
         <button className="v2-restart-btn" onClick={() => window.location.reload()}>
           Repetir test
         </button>
@@ -286,7 +404,6 @@ function Test() {
       ref={pageRef}
       className="test-v2-page"
       tabIndex={0}
-      onKeyDown={handleKeyDown}
     >
       <section key={currentQuestion} className="test-v2-card fade-question">
         <div className="test-v2-top">
@@ -321,15 +438,9 @@ function Test() {
           ))}
         </div>
 
-        <div className="test-v2-actions">
+        <div className="test-v2-actions test-v2-actions-single">
           <button onClick={handleBack} className="v2-back-btn">
             Atrás
-          </button>
-
-          <button onClick={handleNext} className="v2-next-btn">
-            {currentQuestion === questions.length - 1
-              ? "Ver resultado"
-              : "Siguiente"}
           </button>
         </div>
       </section>
@@ -382,7 +493,103 @@ function Metric({ title, value }) {
   );
 }
 
-function LockedCard({ title, value }) {
+export function PremiumReport({ result, decisionRisk, employability, clarity }) {
+  const topCareers = result.rankedCareers.slice(0, 5);
+  const topAreas = result.areaBreakdown.slice(0, 3);
+
+  return (
+    <section className="premium-report">
+      <div className="v2-section-head">
+        <span className="v2-premium-pill">Informe desbloqueado</span>
+        <h2>Plan profesional personalizado</h2>
+        <p>
+          Usa este resumen como una primera ruta de exploracion. Valida tus
+          opciones con cursos cortos, conversaciones con profesionales y
+          comparacion de mallas curriculares.
+        </p>
+      </div>
+
+      <div className="premium-report-grid">
+        <article>
+          <span>Riesgo de decision</span>
+          <strong>{decisionRisk}%</strong>
+          <p>
+            Mientras mas alto sea este numero, mas conviene comparar opciones
+            antes de elegir una carrera definitiva.
+          </p>
+        </article>
+
+        <article>
+          <span>Claridad vocacional</span>
+          <strong>{clarity}%</strong>
+          <p>
+            Tu patron de respuestas muestra que tan consistente es tu direccion
+            actual.
+          </p>
+        </article>
+
+        <article>
+          <span>Proyeccion laboral</span>
+          <strong>{employability}%</strong>
+          <p>
+            Estimacion inicial de adaptabilidad entre tu perfil, habilidades y
+            rutas profesionales.
+          </p>
+        </article>
+      </div>
+
+      <div className="premium-report-columns">
+        <article className="premium-report-card">
+          <h3>Top 5 carreras para investigar</h3>
+          {topCareers.map((career, index) => (
+            <div className="premium-report-row" key={career.name}>
+              <span>{index + 1}</span>
+              <div>
+                <strong>{career.name}</strong>
+                <p>{career.area} · {career.matchScore}% match</p>
+              </div>
+            </div>
+          ))}
+        </article>
+
+        <article className="premium-report-card">
+          <h3>Areas con mejor potencial</h3>
+          {topAreas.map((area) => (
+            <div className="premium-report-row" key={area.area}>
+              <span>{area.averageScore}%</span>
+              <div>
+                <strong>{area.area}</strong>
+                <p>{area.careers.map((career) => career.name).join(", ")}</p>
+              </div>
+            </div>
+          ))}
+        </article>
+      </div>
+
+      <article className="premium-report-card premium-action-plan">
+        <h3>Ruta de accion de 90 dias</h3>
+        <div>
+          <strong>Dias 1-15</strong>
+          <p>Elige 3 carreras del ranking y revisa mallas, videos y testimonios.</p>
+        </div>
+        <div>
+          <strong>Dias 16-35</strong>
+          <p>Haz un curso introductorio o mini proyecto relacionado con tu primera opcion.</p>
+        </div>
+        <div>
+          <strong>Dias 36-60</strong>
+          <p>Conversa con 2 estudiantes o profesionales y compara expectativas reales.</p>
+        </div>
+        <div>
+          <strong>Dias 61-90</strong>
+          <p>Define tu shortlist final y prepara un plan de estudios, habilidades y presupuesto.</p>
+        </div>
+      </article>
+    </section>
+  );
+}
+
+export function LockedCard({ title, value }) {
   return (
     <article className="v2-locked-card">
       <div className="v2-locked-content">
