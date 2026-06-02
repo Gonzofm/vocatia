@@ -76,14 +76,19 @@ function PaymentStatus({ status, onHome, onRetry, onUnlock }) {
           return;
         }
 
+        if (status === "rejected") {
+          setMessage(copy.body);
+          return;
+        }
+
         setMessage(
           response.payment.estado_pago === "failed"
-            ? response.payment.error_message || "El pago fue rechazado."
+            ? "El pago fue rechazado por Mercado Pago."
             : "El pago sigue pendiente de aprobacion."
         );
       } catch (error) {
         if (isMounted) {
-          setMessage(error.message);
+          setMessage(status === "rejected" ? copy.body : error.message);
         }
       } finally {
         if (isMounted) {
@@ -97,7 +102,7 @@ function PaymentStatus({ status, onHome, onRetry, onUnlock }) {
     return () => {
       isMounted = false;
     };
-  }, [onUnlock, query]);
+  }, [copy.body, onUnlock, query, status]);
 
   return (
     <main className="checkout-page payment-status-page">
